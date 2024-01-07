@@ -6,11 +6,13 @@
 
 Starbank greatly simplifies sharing aUEC between discord members with a simple and configurable interface.
 
-## Dependencies
-This project require Java 8+.
-All dependencies are managed by Gradle.
+## Contribute
+This project require Java 8+. All dependencies are managed by Gradle.
 
-- JDA
+You're all welcome to contribute, just make a PR !
+
+### Dependencies
+- Java Discord API
     - Version: v5.0.0-beta-19
     - [Github](https://github.com/discord-jda/JDA)
 - Logback
@@ -25,9 +27,6 @@ All dependencies are managed by Gradle.
 - json-simple
     - Version: 1.1.1
     - [Github](https://github.com/fangyidong/json-simple)
-
-## Contribute
-You're all welcome to contribute, just make a PR !
 
 ## Jetbrains <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" width="35" height="35">
 This project is helped by [Jetbrains](https://www.jetbrains.com/) with their open source program. 
