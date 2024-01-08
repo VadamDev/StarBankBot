@@ -2,7 +2,7 @@
 
 ## Summary
 
-### You can invite the bot [here](https://discord.com/api/oauth2/authorize?client_id=1190547286816735232&permissions=0&scope=bot+applications.commands) !
+### You can invite the bot [here]() !
 
 Starbank greatly simplifies sharing aUEC between discord members with a simple and configurable interface.
 
@@ -27,6 +27,11 @@ You're all welcome to contribute, just make a PR !
 - json-simple
     - Version: 1.1.1
     - [Github](https://github.com/fangyidong/json-simple)
+
+## Special Thanks
+- begood.87 : Original Idea
+- psykosmach : Testing / Suggestions
+- vlad_imirmiilostyvia : Testing
 
 ## Jetbrains <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" width="35" height="35">
 This project is helped by [Jetbrains](https://www.jetbrains.com/) with their open source program. 
