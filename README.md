@@ -28,6 +28,10 @@ You're all welcome to contribute, just make a PR !
     - Version: 1.1.1
     - [Github](https://github.com/fangyidong/json-simple)
 
+# Special Thanks
+- begood.87 : Original Idea
+- psykosmach : Testing
+
 ## Jetbrains <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" width="35" height="35">
 This project is helped by [Jetbrains](https://www.jetbrains.com/) with their open source program. 
 More informations [here](https://jb.gg/OpenSourceSupport)
