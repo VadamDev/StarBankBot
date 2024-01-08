@@ -23,8 +23,8 @@ public class StarbankBot extends JDABot {
     private GuildConfigManager guildConfigManager;
     private TransactionManager transactionManager;
 
-    public StarbankBot() {
-        super(BotToken.RELEASE.getToken(), null);
+    public StarbankBot(AppConfig config) {
+        super(config.token, null);
 
         this.guildsConfigDirectory = Utils.initDirectory("./guilds");
     }

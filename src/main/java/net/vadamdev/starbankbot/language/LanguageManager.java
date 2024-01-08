@@ -5,9 +5,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -27,27 +26,16 @@ public class LanguageManager {
 
         logger.info("Looking for languages...");
 
-        final File directory;
-        try {
-            directory = new File(getClass().getResource("/langs").toURI());
-        } catch (URISyntaxException e) {
-            logger.error("-> An error occurred during languages loading:");
-            e.printStackTrace();
-            return;
-        }
+        for (Lang lang : Lang.values()) {
+            String path = "/langs/" + lang.name().toLowerCase() + ".json";
+            InputStream stream = getClass().getResourceAsStream(path);
 
-        for (File file : directory.listFiles()) {
-            final String langName = Utils.stripExtension(file.getName()).toUpperCase();
-            final Lang lang;
-
-            try {
-                lang = Lang.valueOf(langName);
-            }catch (Exception ignored) {
-                logger.warn("\"" + langName + "\" is an unknown language, skipped loading");
+            if(stream == null) {
+                logger.warn("Not able to find \"" + path + "\", skipped loading");
                 continue;
             }
 
-            languages.put(lang, readLangData(file));
+            languages.put(lang, readLangData(stream, lang.name()));
         }
 
         logger.info("-> Loaded " + languages.size() + " languages !");
@@ -61,11 +49,11 @@ public class LanguageManager {
         return languages.containsKey(Lang.EN_US) ? languages.get(Lang.EN_US).getOrDefault(unlocalizedName, unlocalizedName) : unlocalizedName;
     }
 
-    private Map<String, String> readLangData(File file) {
+    private Map<String, String> readLangData(InputStream stream, String path) {
         final Map<String, String> data = new HashMap<>();
 
         try {
-            final JSONObject jsonObject = (JSONObject) Utils.parseFile(file);
+            final JSONObject jsonObject = (JSONObject) Utils.parseFile(stream);
 
             for (Object o : jsonObject.entrySet()) {
                 Map.Entry<String, ?> entry = (Map.Entry<String, ?>) o;
@@ -81,7 +69,7 @@ public class LanguageManager {
                 }
             }
         }catch(ParseException | IOException e) {
-            logger.error("Error occurred during the loading of " + file.getName() + ": " + e);
+            logger.error("Error occurred during the loading of " + path + ": " + e);
         }
 
         return data;

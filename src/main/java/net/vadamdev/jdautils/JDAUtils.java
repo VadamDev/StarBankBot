@@ -9,27 +9,23 @@ import net.vadamdev.jdautils.commands.CommandHandler;
  * @since 17/10/2022
  */
 public final class JDAUtils {
-    private final CommandHandler commandHandler;
     private final JDA jda;
+
+    private final CommandHandler commandHandler;
 
     public JDAUtils(JDA jda, String commandPrefix) {
         this.jda = jda;
 
-        this.commandHandler = new CommandHandler(commandPrefix);
-        jda.addEventListener(commandHandler);
+        this.commandHandler = new CommandHandler(commandPrefix, jda);
+
+        jda.addEventListener(new JDAUListener(commandHandler));
     }
 
     public void registerCommand(Command command) {
-        if(commandHandler == null)
-            return;
-
         commandHandler.registerCommand(command);
     }
 
     public void finishCommandRegistry() {
-        if(commandHandler == null)
-            return;
-
         commandHandler.registerSlashCommands(jda);
     }
 }

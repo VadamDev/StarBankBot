@@ -6,14 +6,15 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.vadamdev.jdautils.commands.data.ICommandData;
 import net.vadamdev.jdautils.commands.data.SlashCmdData;
 import net.vadamdev.jdautils.commands.data.TextCmdData;
 import net.vadamdev.starbankbot.Main;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -26,23 +27,25 @@ import java.util.stream.Collectors;
  * @author VadamDev
  * @since 17/10/2022
  */
-public final class CommandHandler extends ListenerAdapter {
+public final class CommandHandler {
     public static Consumer<Message> PERMISSION_ACTION = message -> message.reply("You don't have enough permission.").queue();
 
     private final List<Command> commands;
     private final String commandPrefix;
 
-    public CommandHandler(String commandPrefix) {
+    public CommandHandler(String commandPrefix, JDA jda) {
         this.commands = new ArrayList<>();
         this.commandPrefix = commandPrefix;
+
+        if(commandPrefix != null && !jda.getGatewayIntents().contains(GatewayIntent.MESSAGE_CONTENT))
+            LoggerFactory.getLogger(CommandHandler.class).warn("MESSAGE_CONTENT is currently not enabled, legacy commands will not work!");
     }
 
     /*
        Legacy Commands
      */
 
-    @Override
-    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+    public void handleMessageReceive(@Nonnull MessageReceivedEvent event) {
         if(commandPrefix == null)
             return;
 
@@ -76,8 +79,7 @@ public final class CommandHandler extends ListenerAdapter {
        Slash Commands
      */
 
-    @Override
-    public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {
+    public void handleSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {
         commands.stream()
                 .filter(ISlashCommand.class::isInstance)
                 .filter(command -> command.check(event.getName()))
@@ -95,8 +97,7 @@ public final class CommandHandler extends ListenerAdapter {
                 });
     }
 
-    @Override
-    public void onCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {
+    public void handleCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {
         commands.stream()
                 .filter(ISlashCommand.class::isInstance)
                 .filter(command -> command.check(event.getName()))

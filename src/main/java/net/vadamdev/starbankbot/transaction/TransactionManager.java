@@ -105,6 +105,15 @@ public class TransactionManager {
             case "StarBank-Transaction-Add":
                 findTransactionByMessageId(messageId)
                         .ifPresent(transaction -> {
+                            if(!event.getMember().getId().equals(transaction.getOwnerId())) {
+                                event.replyEmbeds(new EmbedBuilder()
+                                        .setDescription(transaction.getConfig().getLang().localize("transaction.error.not_owner"))
+                                        .setColor(Color.RED)
+                                        .setFooter("StarBank - By VadamDev").build()).setEphemeral(true).queue();
+
+                                return;
+                            }
+
                             event.replyEmbeds(new EmbedBuilder()
                                     .setTitle("Star Bank - " + transaction.getAmount() + " aUEC")
                                     .setDescription(transaction.getConfig().getLang().localize("transaction.add.message"))

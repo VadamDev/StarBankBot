@@ -45,7 +45,7 @@ public class AUECCommand extends Command implements ISlashCommand {
         return Commands.slash(name, "Start a transaction")
                 .addOptions(
                         new OptionData(OptionType.INTEGER, "amount", "Amount of aUEC")
-                                .setMinValue(1)
+                                .setRequiredRange(1, Integer.MAX_VALUE)
                                 .setRequired(true),
                         new OptionData(OptionType.BOOLEAN, "override", "If possible, set the transaction mode to DEFAULT")
                 );
