@@ -2,7 +2,7 @@
 
 ## Summary
 
-### You can invite the bot [here](https://discord.com/api/oauth2/authorize?client_id=1190547286816735232&permissions=0&scope=bot+applications.commands) !
+### You can invite the bot [here]() !
 
 Starbank greatly simplifies sharing aUEC between discord members with a simple and configurable interface.
 
