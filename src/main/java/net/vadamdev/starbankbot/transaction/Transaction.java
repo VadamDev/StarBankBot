@@ -109,7 +109,7 @@ public class Transaction {
         final Lang lang = config.getLang();
 
         final StringBuilder description = new StringBuilder(
-                "> " + lang.localize("distributionMode.description." + config.getDistributionMode().name())
+                "> " + lang.localize("distributionMode.description." + (ignoreConfig ? DistributionMode.DEFAULT : config.getDistributionMode()).name())
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%percentage%", String.valueOf(config.TRANSACTION_PERCENTAGE)) + "\n" +
                 "\n" +
@@ -143,9 +143,12 @@ public class Transaction {
         final double[] result = (ignoreConfig ? DistributionMode.DEFAULT : config.getDistributionMode()).distribute(amount, members.size(), config);
         final NumberFormat numberFormat = NumberFormat.getInstance(lang.toLocale());
 
+        final double member = Math.floor(result[0] - (0.005 * result[0]));
+        final double bot = Math.floor(result[1] - (0.005 * result[1]));
+
         description.append("\n" + lang.localize("transaction.result.footer")
-                .replace("%member%", numberFormat.format(Math.floor(result[0])))
-                .replace("%bot%", numberFormat.format(Math.floor(result[1]))));
+                .replace("%member%", numberFormat.format(member))
+                .replace("%bot%", numberFormat.format(bot)));
 
         return new EmbedBuilder()
                 .setTitle("Star Bank - " + amount + " aUEC")

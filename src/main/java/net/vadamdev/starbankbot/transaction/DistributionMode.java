@@ -11,28 +11,19 @@ import net.vadamdev.starbankbot.config.GuildConfiguration;
  */
 public enum DistributionMode {
     DEFAULT("Default", "Basic distribution", Emoji.fromUnicode("\uD83D\uDEAB"), (amount, userCount, config) -> {
-        if(userCount == 0)
-            return new double[] { amount, 0 };
-
-        return new double[] { (double) amount / userCount, 0 };
+        return userCount == 0 ? new double[] { amount, 0 } : new double[] { (double) amount / userCount, 0 };
     }),
 
     PERCENTAGE("Percentage", "The bot is gonna take a % of the transaction", Emoji.fromUnicode("\uD83D\uDCC8"), (amount, userCount, config) -> {
         final double bot = (double) config.TRANSACTION_PERCENTAGE / 100 * amount;
 
-        if(userCount == 0)
-            return new double[] { amount - bot, bot };
-
-        return new double[] { (amount - bot) / userCount, bot };
+        return userCount == 0 ? new double[] { amount - bot, bot } : new double[] { (amount - bot) / userCount, bot };
     }),
 
     COUNT_AS_USER("Count As User", "The bot will participate in the distribution", Emoji.fromUnicode("\uD83D\uDC65"), (amount, userCount, config) -> {
         final double result = (double) amount / (userCount + 1);
 
-        if(userCount == 0)
-            return new double[] { 0, result };
-
-        return new double[] { result, result };
+        return userCount == 0 ? new double[] { 0, result } : new double[] { result, result };
     });
 
     private final String displayName, description;
