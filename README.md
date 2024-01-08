@@ -30,7 +30,8 @@ You're all welcome to contribute, just make a PR !
 
 ## Special Thanks
 - begood.87 : Original Idea
-- psykosmach : Testing
+- psykosmach : Testing / Suggestions
+- vlad_imirmiilostyvia : Testing
 
 ## Jetbrains <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" width="35" height="35">
 This project is helped by [Jetbrains](https://www.jetbrains.com/) with their open source program. 
