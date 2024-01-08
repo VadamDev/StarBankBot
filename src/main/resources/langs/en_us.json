@@ -1,0 +1,31 @@
+{
+  "distributionMode.description.DEFAULT": "The initial amount (%amount%) will be dispatched between every members",
+  "distributionMode.description.PERCENTAGE": "The bot is gonna take %percentage%% of the initial amount (%amount%) and dispatch the rest between every members",
+  "distributionMode.description.COUNT_AS_USER": "The bot will consider itself as a member of the transaction",
+
+  "transaction.header": "**Members:**",
+  "transaction.footer": [
+    "**Buttons:**",
+    "> ✅ *: Recover your share*",
+    "> \uD83D\uDD12 *: Complete the transaction __(Owner Only)__*",
+    "> ➕ *: Add members to the transaction __(Owner Only)__*"
+  ],
+
+  "transaction.result.header": "**Members (%member_count%):**",
+  "transaction.result.footer": [
+    "**Members share:**",
+    "> ``%member% AUEC``",
+    "",
+    "**Bot share:**",
+    "> ``%bot% AUEC``"
+  ],
+
+  "transaction.add.message": [
+    "**Buttons:**",
+    "> #️⃣ *: Add from channel*",
+    "> \uD83D\uDC64 *: Add specific members*"
+  ],
+
+  "transaction.error.not_owner": "Only the person who typed the command can close this transaction !",
+  "transaction.error.not_user": "You're not part of this transaction !"
+}
