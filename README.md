@@ -28,7 +28,7 @@ You're all welcome to contribute, just make a PR !
     - Version: 1.1.1
     - [Github](https://github.com/fangyidong/json-simple)
 
-# Special Thanks
+## Special Thanks
 - begood.87 : Original Idea
 - psykosmach : Testing
 
