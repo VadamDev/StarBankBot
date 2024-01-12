@@ -1,4 +1,4 @@
-package net.vadamdev.jdautils.message.entities;
+package net.vadamdev.jdautils.smart.entities;
 
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
@@ -11,22 +11,22 @@ import java.util.function.Consumer;
  * @author VadamDev
  * @since 08/01/2024
  */
-public class ClickeableButton implements IClickeableComponent<ButtonInteractionEvent> {
-    public static ClickeableButton empty(Button button) {
+public class SmartButton implements ISmartComponent<ButtonInteractionEvent> {
+    public static SmartButton of(Button button, Consumer<ButtonInteractionEvent> consumer) {
+        return new SmartButton(button, consumer);
+    }
+
+    public static SmartButton empty(Button button) {
         if(!button.getStyle().equals(ButtonStyle.LINK))
             return of(button, event -> event.deferEdit().queue());
 
         return of(button, event -> {});
     }
 
-    public static ClickeableButton of(Button button, Consumer<ButtonInteractionEvent> consumer) {
-        return new ClickeableButton(button, consumer);
-    }
-
     private final Button button;
     private final Consumer<ButtonInteractionEvent> consumer;
 
-    private ClickeableButton(Button button, Consumer<ButtonInteractionEvent> consumer) {
+    private SmartButton(Button button, Consumer<ButtonInteractionEvent> consumer) {
         this.button = button;
         this.consumer = consumer;
     }

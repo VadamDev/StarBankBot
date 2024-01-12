@@ -1,10 +1,17 @@
 package net.vadamdev.jdautils;
 
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.vadamdev.jdautils.commands.CommandHandler;
+import net.vadamdev.jdautils.smart.SmartInteractionsManager;
 
 import javax.annotation.Nonnull;
 
@@ -34,28 +41,33 @@ public class JDAUListener extends ListenerAdapter {
         commandHandler.handleCommandAutoCompleteInteraction(event);
     }
 
-    /*@Override
+    @Override
     public void onButtonInteraction(@Nonnull ButtonInteractionEvent event) {
-        SmartMessageManager.handleButtonInteraction(event);
+        SmartInteractionsManager.handleInteraction(event);
     }
 
     @Override
     public void onStringSelectInteraction(@Nonnull StringSelectInteractionEvent event) {
-        SmartMessageManager.handleStringSelectInteraction(event);
+        SmartInteractionsManager.handleInteraction(event);
     }
 
     @Override
     public void onEntitySelectInteraction(@Nonnull EntitySelectInteractionEvent event) {
-        SmartMessageManager.handleEntitySelectInteraction(event);
+        SmartInteractionsManager.handleInteraction(event);
+    }
+
+    @Override
+    public void onModalInteraction(@Nonnull ModalInteractionEvent event) {
+        SmartInteractionsManager.handleModalInteraction(event);
     }
 
     @Override
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {
-        SmartMessageManager.handleMessageDelete(event.getGuild().getId(), event.getMessageId());
+        SmartInteractionsManager.unregisterSmartMessage(event.getGuild().getId(), event.getMessageId());
     }
 
     @Override
     public void onMessageBulkDelete(@Nonnull MessageBulkDeleteEvent event) {
-        event.getMessageIds().forEach(messageId -> SmartMessageManager.handleMessageDelete(event.getGuild().getId(), messageId));
-    }*/
+        event.getMessageIds().forEach(messageId -> SmartInteractionsManager.unregisterSmartMessage(event.getGuild().getId(), messageId));
+    }
 }

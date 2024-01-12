@@ -42,7 +42,7 @@ public class GuildConfigManager {
     public GuildConfiguration getOrDefault(String guildId) {
         return configs.computeIfAbsent(guildId, k -> {
             try {
-                final GuildConfiguration config = new GuildConfiguration(directory.getPath() + "\\" + guildId + ".yml");
+                final GuildConfiguration config = new GuildConfiguration(new File(directory.getPath(),guildId + ".yml"));
                 ConfigurationLoader.loadConfiguration(config);
                 return config;
             } catch (IOException | IllegalAccessException e) {

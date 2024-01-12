@@ -1,6 +1,5 @@
 package net.vadamdev.starbankbot.transaction;
 
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -13,10 +12,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.vadamdev.starbankbot.Main;
 import net.vadamdev.starbankbot.config.GuildConfiguration;
+import net.vadamdev.starbankbot.utils.StarbankEmbed;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
-import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,8 +23,6 @@ import java.util.stream.Collectors;
  * @since 05/01/2024
  */
 public class TransactionManager {
-    private static final Color SETTINGS_COLOR = new Color(52, 152, 219);
-
     private final Map<String, List<Transaction>> transactionMap;
 
     public TransactionManager() {
@@ -59,10 +55,9 @@ public class TransactionManager {
         if(componentId.startsWith("StarBank-Transaction-Add-Channel_")) {
             findTransactionByMessageId(componentId.split("_")[1])
                     .ifPresent(transaction -> {
-                        event.replyEmbeds(new EmbedBuilder()
+                        event.replyEmbeds(new StarbankEmbed()
                                     .setTitle("Star Bank - " + transaction.getAmount() + " aUEC")
-                                    .setColor(SETTINGS_COLOR)
-                                    .setFooter("StarBank - By VadamDev", Main.starbankBot.getAvatarURL()).build())
+                                    .setColor(StarbankEmbed.CONFIG_COLOR).build())
                             .setEphemeral(true).setActionRow(
                                     EntitySelectMenu.create("StarBank-Transaction-ChannelSelectMenu_" + transaction.getMessageId(), EntitySelectMenu.SelectTarget.CHANNEL)
                                             .setChannelTypes(ChannelType.VOICE)
@@ -75,10 +70,9 @@ public class TransactionManager {
         }else if(componentId.startsWith("StarBank-Transaction-Add-Member_")) {
             findTransactionByMessageId(componentId.split("_")[1])
                     .ifPresent(transaction -> {
-                        event.replyEmbeds(new EmbedBuilder()
+                        event.replyEmbeds(new StarbankEmbed()
                                         .setTitle("Star Bank - " + transaction.getAmount() + " aUEC")
-                                        .setColor(SETTINGS_COLOR)
-                                        .setFooter("StarBank - By VadamDev", Main.starbankBot.getAvatarURL()).build())
+                                        .setColor(StarbankEmbed.CONFIG_COLOR).build())
                                 .setEphemeral(true).setActionRow(
                                         EntitySelectMenu.create("StarBank-Transaction-UserSelectMenu_" + transaction.getMessageId(), EntitySelectMenu.SelectTarget.USER)
                                                 .setRequiredRange(1, 5)
@@ -106,19 +100,17 @@ public class TransactionManager {
                 findTransactionByMessageId(messageId)
                         .ifPresent(transaction -> {
                             if(!event.getMember().getId().equals(transaction.getOwnerId())) {
-                                event.replyEmbeds(new EmbedBuilder()
+                                event.replyEmbeds(new StarbankEmbed()
                                         .setDescription(transaction.getConfig().getLang().localize("transaction.error.not_owner"))
-                                        .setColor(Color.RED)
-                                        .setFooter("StarBank - By VadamDev").build()).setEphemeral(true).queue();
+                                        .setColor(StarbankEmbed.ERROR_COLOR).build()).setEphemeral(true).queue();
 
                                 return;
                             }
 
-                            event.replyEmbeds(new EmbedBuilder()
+                            event.replyEmbeds(new StarbankEmbed()
                                     .setTitle("Star Bank - " + transaction.getAmount() + " aUEC")
                                     .setDescription(transaction.getConfig().getLang().localize("transaction.add.message"))
-                                    .setColor(SETTINGS_COLOR)
-                                    .setFooter("StarBank - By VadamDev", Main.starbankBot.getAvatarURL()).build()
+                                    .setColor(StarbankEmbed.CONFIG_COLOR).build()
                             ).setEphemeral(true).setActionRow(
                                     Button.secondary("StarBank-Transaction-Add-Channel_" + transaction.getMessageId(), Emoji.fromUnicode("#️⃣")),
                                     Button.secondary("StarBank-Transaction-Add-Member_" + transaction.getMessageId(), Emoji.fromUnicode("\uD83D\uDC64"))

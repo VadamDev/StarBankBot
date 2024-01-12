@@ -19,7 +19,7 @@ public final class Utils {
         return fileName.replaceFirst("[.][^.]+$", "");
     }
 
-    public static String formatBoolean(boolean b) {
+    public static String displayBoolean(boolean b) {
         return b ? "✅" : "❌";
     }
 
@@ -46,9 +46,5 @@ public final class Utils {
             return new JSONArray();
 
         return new JSONParser().parse(jsonString.toString());
-    }
-
-    public static Object parseFile(File file) throws ParseException, IOException {
-        return parseFile(new FileInputStream(file));
     }
 }

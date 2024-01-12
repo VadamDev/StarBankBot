@@ -1,4 +1,4 @@
-package net.vadamdev.jdautils.message;
+package net.vadamdev.jdautils.smart.messages;
 
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -8,6 +8,4 @@ import net.dv8tion.jda.api.entities.Guild;
  */
 public interface SmartMessageProvider {
     void init(Guild guild, MessageContent contents);
-
-    void populate(Guild guild, MessageContent contents);
 }

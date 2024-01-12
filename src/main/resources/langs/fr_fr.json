@@ -6,7 +6,7 @@
   "transaction.header": "**Membres:**",
   "transaction.footer": [
     "**Boutons:**",
-    "> ✅ *: Récupéré votre part*",
+    "> ✅ *: Récupérer votre part*",
     "> \uD83D\uDD12 *: Finir la transaction __(Propriétaire uniquement)__*",
     "> ➕ *: Ajoutez des membres à la transaction __(Propriétaire uniquement)__*"
   ],

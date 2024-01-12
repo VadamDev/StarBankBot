@@ -1,6 +1,5 @@
 package net.vadamdev.starbankbot.transaction;
 
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -13,9 +12,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.vadamdev.starbankbot.Main;
 import net.vadamdev.starbankbot.config.GuildConfiguration;
 import net.vadamdev.starbankbot.language.Lang;
+import net.vadamdev.starbankbot.utils.StarbankEmbed;
 import net.vadamdev.starbankbot.utils.Utils;
 
-import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.HashMap;
@@ -79,18 +78,18 @@ public class Transaction {
             users.replace(userId, !users.get(userId));
             refreshMessage();
         }else
-            callback.replyEmbeds(new EmbedBuilder()
+            callback.replyEmbeds(new StarbankEmbed()
                     .setDescription(config.getLang().localize("transaction.error.not_user"))
-                    .setColor(Color.RED)
-                    .setFooter("StarBank - By VadamDev").build()).setEphemeral(true).queue();
+                    .setColor(StarbankEmbed.ERROR_COLOR).build())
+                    .setEphemeral(true).queue();
     }
 
     protected void computeCloseButton(Member member, IReplyCallback event) {
         if(!member.getId().equals(ownerId)) {
-            event.replyEmbeds(new EmbedBuilder()
+            event.replyEmbeds(new StarbankEmbed()
                     .setDescription(config.getLang().localize("transaction.error.not_owner"))
-                    .setColor(Color.RED)
-                    .setFooter("StarBank - By VadamDev").build()).setEphemeral(true).queue();
+                    .setColor(StarbankEmbed.ERROR_COLOR).build())
+                    .setEphemeral(true).queue();
 
             return;
         }
@@ -116,15 +115,14 @@ public class Transaction {
                 lang.localize("transaction.header") + "\n"
         );
 
-        users.forEach((userId, b) -> description.append("> (" + Utils.formatBoolean(b) + ") - <@" + userId + ">\n"));
+        users.forEach((userId, b) -> description.append("> (" + Utils.displayBoolean(b) + ") - <@" + userId + ">\n"));
 
         description.append("\n" + lang.localize("transaction.footer"));
 
-        return new EmbedBuilder()
+        return new StarbankEmbed()
                 .setTitle("Star Bank - " + amount + " aUEC")
                 .setDescription(description.toString())
-                .setColor(Color.ORANGE)
-                .setFooter("StarBank - By VadamDev", Main.starbankBot.getAvatarURL())
+                .setColor(StarbankEmbed.NEUTRAL_COLOR)
                 .build();
     }
 
@@ -150,11 +148,10 @@ public class Transaction {
                 .replace("%member%", numberFormat.format(member))
                 .replace("%bot%", numberFormat.format(bot)));
 
-        return new EmbedBuilder()
+        return new StarbankEmbed()
                 .setTitle("Star Bank - " + amount + " aUEC")
                 .setDescription(description.toString())
-                .setColor(Color.GREEN)
-                .setFooter("StarBank - By VadamDev", Main.starbankBot.getAvatarURL()).build();
+                .setColor(StarbankEmbed.SUCCESS_COLOR).build();
     }
 
     /*

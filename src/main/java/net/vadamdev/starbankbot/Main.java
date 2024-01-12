@@ -16,11 +16,11 @@ public class Main {
 
         try {
             config = new AppConfig();
-            boolean existBefore = config.getYamlFile().exists();
+            boolean existedBefore = config.getYamlFile().exists();
             ConfigurationLoader.loadConfiguration(config);
 
-            if(!existBefore) {
-                logger.info("Generated default app configuration, please put the token in config.yml");
+            if(!existedBefore) {
+                logger.info("Generated default app configuration, please put the bot token in the config.yml file");
                 System.exit(0);
             }
         } catch (IOException | IllegalAccessException e) {
