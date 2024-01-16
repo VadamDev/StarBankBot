@@ -32,7 +32,6 @@ public class SettingsMainMenu extends AbstractSettingsMenu {
     @Override
     public void init(Guild guild, MessageContent contents) {
         final GuildConfiguration config = Main.starbankBot.getGuildConfigManager().getOrDefault(guild);
-
         final Lang lang = config.getLang();
         final DistributionMode distributionMode = config.getDistributionMode();
 
@@ -41,14 +40,14 @@ public class SettingsMainMenu extends AbstractSettingsMenu {
          */
 
         contents.setEmbed(new StarbankEmbed()
-                .setTitle("Star Bank - Settings")
+                .setTitle("Star Bank - " + lang.localize("settings.name"))
                 .setDescription(
-                        "> Language: " + lang.getDisplayName() + " (" + lang.getFlag().getFormatted() + ")\n" +
-                        "> *Note: The settings menu is currently not translated*\n" +
-                        "\n" +
-                        "> Transaction Mode: " + distributionMode.name() + "\n" +
-                        (distributionMode == DistributionMode.PERCENTAGE ? "> Percentage: " + config.TRANSACTION_PERCENTAGE + "%\n" : "") +
-                        "> Allow Override Transaction Mode: " + Utils.displayBoolean(config.TRANSACTION_ALLOW_OVERRIDE) + "\n"
+                        lang.localize("settings.mainMenu.description", str -> str
+                                .replace("%lang_name%", lang.getDisplayName())
+                                .replace("%lang_flag%", lang.getFlag().getName())
+                                .replace("%distribution_mode%", distributionMode.getDisplayName())
+                                .replace("%percentage_line%", distributionMode.equals(DistributionMode.PERCENTAGE) ? lang.localize("settings.mainMenu.percentageLine", str1 -> str1.replace("%percentage%", String.valueOf(config.TRANSACTION_PERCENTAGE))) : "")
+                                .replace("%allow_override%", Utils.displayBoolean(config.TRANSACTION_ALLOW_OVERRIDE)))
                 )
                 .setColor(StarbankEmbed.CONFIG_COLOR)
                 .build());
@@ -74,7 +73,7 @@ public class SettingsMainMenu extends AbstractSettingsMenu {
                     SETTINGS_TRANSACTION_MENU.open(event.getMessage());
                 }),
 
-                SmartButton.of(Button.danger("StarBank-Settings-Close", "Close"), event -> {
+                SmartButton.of(Button.danger("StarBank-Settings-Close", lang.localize("settings.close")), event -> {
                     if(!canUse(event.getMember()))
                         return;
 
@@ -82,7 +81,7 @@ public class SettingsMainMenu extends AbstractSettingsMenu {
 
                     final Message message = event.getMessage();
 
-                    SmartInteractionsManager.unregisterSmartMessage(event.getGuild().getId(), message.getId());
+                    SmartInteractionsManager.unregisterSmartMessage(message.getGuild().getId(), message.getId());
                     message.editMessageComponents(message.getComponents().stream().map(LayoutComponent::asDisabled).collect(Collectors.toList())).queue();
                 })
         );

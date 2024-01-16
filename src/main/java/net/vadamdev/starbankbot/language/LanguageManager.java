@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author VadamDev
@@ -31,7 +28,7 @@ public class LanguageManager {
             InputStream stream = getClass().getResourceAsStream(path);
 
             if(stream == null) {
-                logger.warn("Not able to find \"" + path + "\", skipped loading");
+                logger.warn("Unable to find \"" + path + "\", skipped loading");
                 continue;
             }
 
@@ -42,11 +39,7 @@ public class LanguageManager {
     }
 
     protected String localize(Lang lang, String unlocalizedName) {
-        return languages.containsKey(lang) ? languages.get(lang).getOrDefault(unlocalizedName, tryFallBack(unlocalizedName)) : tryFallBack(unlocalizedName);
-    }
-
-    private String tryFallBack(String unlocalizedName) {
-        return languages.containsKey(Lang.EN_US) ? languages.get(Lang.EN_US).getOrDefault(unlocalizedName, unlocalizedName) : unlocalizedName;
+        return languages.getOrDefault(lang, languages.getOrDefault(Lang.EN_US, Collections.emptyMap())).getOrDefault(unlocalizedName, unlocalizedName);
     }
 
     private Map<String, String> readLangData(InputStream stream, String path) {
@@ -56,7 +49,7 @@ public class LanguageManager {
             final JSONObject jsonObject = (JSONObject) Utils.parseFile(stream);
 
             for (Object o : jsonObject.entrySet()) {
-                Map.Entry<String, ?> entry = (Map.Entry<String, ?>) o;
+                final Map.Entry<String, ?> entry = (Map.Entry<String, ?>) o;
 
                 if(entry.getValue() instanceof String)
                     data.put(entry.getKey(), (String) entry.getValue());

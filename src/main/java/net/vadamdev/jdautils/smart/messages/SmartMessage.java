@@ -4,7 +4,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.vadamdev.jdautils.smart.SmartInteractionsManager;
 import net.vadamdev.jdautils.smart.entities.ISmartComponent;
@@ -87,7 +86,7 @@ public class SmartMessage {
             return this;
         }
 
-        public Builder addComponents(ISmartComponent<? extends GenericInteractionCreateEvent>... components) {
+        public Builder addComponents(ISmartComponent... components) {
             content.addComponents(components);
             return this;
         }

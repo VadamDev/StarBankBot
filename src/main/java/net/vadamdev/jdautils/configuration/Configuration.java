@@ -5,8 +5,8 @@ import org.simpleyaml.configuration.file.YamlFile;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 /**
  * Represents a configuration file.
@@ -60,11 +60,14 @@ public class Configuration {
      */
     public boolean hasField(@Nonnull String fieldName) {
         try {
-            return Arrays.stream(getClass().getField(fieldName).getAnnotations())
-                    .anyMatch(ConfigValue.class::isInstance);
-        } catch (NoSuchFieldException ignored) {
-            return false;
-        }
+            for(Annotation annotation : getClass().getField(fieldName).getAnnotations()) {
+                if(annotation instanceof ConfigValue) {
+                    return true;
+                }
+            }
+        }catch (NoSuchFieldException ignored) {}
+
+        return false;
     }
 
     /**

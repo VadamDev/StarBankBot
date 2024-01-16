@@ -19,14 +19,15 @@ public class SettingsLanguageMenu extends AbstractSettingsMenu {
     @Override
     public void init(Guild guild, MessageContent contents) {
         final GuildConfiguration config = Main.starbankBot.getGuildConfigManager().getOrDefault(guild);
+        final Lang lang = config.getLang();
 
         /*
            Embed
          */
 
         contents.setEmbed(new StarbankEmbed()
-                .setTitle("Star Bank - Settings")
-                .setDescription("Please select a language in the list below")
+                .setTitle("Star Bank - " + lang.localize("settings.name"))
+                .setDescription(lang.localize("settings.languageMenu.description"))
                 .setColor(StarbankEmbed.CONFIG_COLOR)
                 .build());
 
@@ -34,24 +35,22 @@ public class SettingsLanguageMenu extends AbstractSettingsMenu {
            Components
          */
 
-        final StringSelectMenu.Builder languageSelectMenu = Lang.createSelectionMenu();
-        languageSelectMenu.setDefaultOptions(config.getLang().toSelectOption());
-
         contents.addComponents(
-                SmartStringSelectMenu.of(languageSelectMenu.build(), event -> {
+                SmartStringSelectMenu.of(Lang.createSelectionMenu().setDefaultOptions(lang.toSelectOption()).build(), event -> {
                     if(!canUse(event.getMember()))
                         return;
 
-                    setConfigValue(config, "LANG", event.getValues().get(0));
+                    final Lang newLang = Lang.valueOf(event.getValues().get(0));
 
-                    replySuccessMessage(event);
+                    setConfigValue(config, "LANG", newLang.name());
 
+                    replySuccessMessage(event, newLang);
                     SettingsMainMenu.SETTINGS_MAIN_MENU.open(event.getMessage());
                 })
         );
 
         contents.addComponents(
-                SmartButton.of(Button.secondary("StarBank-Settings-MainMenu", "Go Back"), event -> {
+                SmartButton.of(Button.secondary("StarBank-Settings-MainMenu", lang.localize("settings.back")), event -> {
                     if(!canUse(event.getMember()))
                         return;
 

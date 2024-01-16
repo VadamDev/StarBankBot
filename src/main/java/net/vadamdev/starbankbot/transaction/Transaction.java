@@ -1,14 +1,13 @@
 package net.vadamdev.starbankbot.transaction;
 
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.vadamdev.starbankbot.Main;
 import net.vadamdev.starbankbot.config.GuildConfiguration;
 import net.vadamdev.starbankbot.language.Lang;
@@ -16,10 +15,7 @@ import net.vadamdev.starbankbot.utils.StarbankEmbed;
 import net.vadamdev.starbankbot.utils.Utils;
 
 import java.text.NumberFormat;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -32,7 +28,7 @@ public class Transaction {
     private final boolean ignoreConfig;
     private final GuildConfiguration config;
 
-    private final Map<String, Boolean> users;
+    private final Map<String, Data> users;
 
     private Message message;
 
@@ -46,9 +42,9 @@ public class Transaction {
 
         final GuildVoiceState voiceState = owner.getVoiceState();
         if(voiceState.inAudioChannel())
-            voiceState.getChannel().getMembers().forEach(member -> users.putIfAbsent(member.getId(), false));
+            voiceState.getChannel().getMembers().forEach(member -> users.putIfAbsent(member.getId(), new Data(member.getUser().getEffectiveName())));
         else
-            users.put(ownerId, false);
+            users.put(ownerId, new Data(owner.getUser().getEffectiveName()));
 
         callback.replyEmbeds(createTransactionEmbed())
                 .setActionRow(
@@ -58,8 +54,8 @@ public class Transaction {
                 ).queue(a -> a.retrieveOriginal().queue(message -> this.message = message));
     }
 
-    public void addUsers(Collection<String> userIds) {
-        userIds.forEach(userId -> users.putIfAbsent(userId, false));
+    public void addUsers(Collection<User> users) {
+        users.forEach(user -> this.users.putIfAbsent(user.getId(), new Data(user.getEffectiveName())));
         refreshMessage();
     }
 
@@ -75,7 +71,9 @@ public class Transaction {
         if(users.containsKey(userId)) {
             callback.deferEdit().queue();
 
-            users.replace(userId, !users.get(userId));
+            final Data data = users.get(userId);
+            data.isTaking = !data.isTaking;
+
             refreshMessage();
         }else
             callback.replyEmbeds(new StarbankEmbed()
@@ -84,20 +82,44 @@ public class Transaction {
                     .setEphemeral(true).queue();
     }
 
-    protected void computeCloseButton(Member member, IReplyCallback event) {
-        if(!member.getId().equals(ownerId)) {
-            event.replyEmbeds(new StarbankEmbed()
-                    .setDescription(config.getLang().localize("transaction.error.not_owner"))
-                    .setColor(StarbankEmbed.ERROR_COLOR).build())
-                    .setEphemeral(true).queue();
-
+    protected void computeCloseButton(String userId, IReplyCallback callback) {
+        if(!checkOwner(userId, callback))
             return;
-        }
 
         Main.starbankBot.getTransactionManager().removeTransaction(this);
         message.editMessageComponents(message.getActionRows().stream().map(ActionRow::asDisabled).collect(Collectors.toList())).queue();
 
-        event.replyEmbeds(createEndTransactionEmbed()).queue();
+        callback.replyEmbeds(createEndTransactionEmbed()).queue();
+    }
+
+    protected void computeAddButton(String userId, IReplyCallback callback) {
+        if(!checkOwner(userId, callback))
+            return;
+
+        callback.replyEmbeds(new StarbankEmbed()
+                .setTitle("Star Bank - " + amount + " aUEC")
+                .setDescription(config.getLang().localize("transaction.button.add.message"))
+                .setColor(StarbankEmbed.CONFIG_COLOR).build()
+        ).setEphemeral(true).setComponents(
+                ActionRow.of(EntitySelectMenu.create("StarBank-Transaction-ChannelSelectMenu_" + message.getId(), EntitySelectMenu.SelectTarget.CHANNEL)
+                        .setChannelTypes(ChannelType.VOICE)
+                        .setRequiredRange(1, 3)
+                        .build()),
+                ActionRow.of(EntitySelectMenu.create("StarBank-Transaction-UserSelectMenu_" + message.getId(), EntitySelectMenu.SelectTarget.USER)
+                        .setRequiredRange(1, 5)
+                        .build())
+        ).queue();
+    }
+
+    private boolean checkOwner(String userId, IReplyCallback callback) {
+        if(userId.equals(ownerId))
+            return true;
+
+        callback.replyEmbeds(new StarbankEmbed()
+                .setDescription(config.getLang().localize("transaction.error.not_owner"))
+                .setColor(StarbankEmbed.ERROR_COLOR).build()).setEphemeral(true).queue();
+
+        return false;
     }
 
     /*
@@ -108,14 +130,14 @@ public class Transaction {
         final Lang lang = config.getLang();
 
         final StringBuilder description = new StringBuilder(
-                "> " + lang.localize("distributionMode.description." + (ignoreConfig ? DistributionMode.DEFAULT : config.getDistributionMode()).name())
-                        .replace("%amount%", String.valueOf(amount))
-                        .replace("%percentage%", String.valueOf(config.TRANSACTION_PERCENTAGE)) + "\n" +
+                "> " + lang.localize("distributionMode.description." + (ignoreConfig ? DistributionMode.DEFAULT : config.getDistributionMode()).name() + ".b", str -> str.replace("%amount%", String.valueOf(amount)).replace("%percentage%", String.valueOf(config.TRANSACTION_PERCENTAGE))) + "\n" +
                 "\n" +
                 lang.localize("transaction.header") + "\n"
         );
 
-        users.forEach((userId, b) -> description.append("> (" + Utils.displayBoolean(b) + ") - <@" + userId + ">\n"));
+        users.entrySet().stream()
+                .sorted(Comparator.comparing(a -> a.getValue().username))
+                .forEachOrdered(entry -> description.append("> (" + Utils.displayBoolean(entry.getValue().isTaking) + ") - <@" + entry.getKey() + ">\n"));
 
         description.append("\n" + lang.localize("transaction.footer"));
 
@@ -129,12 +151,13 @@ public class Transaction {
     private MessageEmbed createEndTransactionEmbed() {
         final Lang lang = config.getLang();
         final List<String> members = users.entrySet().stream()
-                .filter(Map.Entry::getValue)
+                .filter(entry -> entry.getValue().isTaking)
+                .sorted(Comparator.comparing(entry -> entry.getValue().username))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
-        final StringBuilder description = new StringBuilder(lang.localize("transaction.result.header")
-                .replace("%member_count%", members.size()+"")+ "\n");
+        final StringBuilder description = new StringBuilder(lang.localize("transaction.result.header", str -> str
+                .replace("%member_count%", String.valueOf(members.size()))) + "\n");
 
         members.forEach(userId -> description.append("> <@" + userId + ">\n"));
 
@@ -144,9 +167,9 @@ public class Transaction {
         final double member = Math.floor(result[0] - (0.005 * result[0]));
         final double bot = Math.floor(result[1] - (0.005 * result[1]));
 
-        description.append("\n" + lang.localize("transaction.result.footer")
+        description.append("\n" + lang.localize("transaction.result.footer", str -> str
                 .replace("%member%", numberFormat.format(member))
-                .replace("%bot%", numberFormat.format(bot)));
+                .replace("%bot%", numberFormat.format(bot))));
 
         return new StarbankEmbed()
                 .setTitle("Star Bank - " + amount + " aUEC")
@@ -158,19 +181,21 @@ public class Transaction {
        Getters
      */
 
-    String getOwnerId() {
+    protected String getOwnerId() {
         return ownerId;
     }
 
-    int getAmount() {
-        return amount;
-    }
-
-    GuildConfiguration getConfig() {
-        return config;
-    }
-
-    String getMessageId() {
+    protected String getMessageId() {
         return message.getId();
+    }
+
+    private static class Data {
+        private final String username;
+        private boolean isTaking;
+
+        private Data(String username) {
+            this.username = username;
+            this.isTaking = false;
+        }
     }
 }

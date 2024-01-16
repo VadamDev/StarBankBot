@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.vadamdev.jdautils.smart.messages.SmartMessageProvider;
 import net.vadamdev.starbankbot.commands.settings.SettingsCommand;
 import net.vadamdev.starbankbot.config.GuildConfiguration;
+import net.vadamdev.starbankbot.language.Lang;
 import net.vadamdev.starbankbot.utils.StarbankEmbed;
 
 import java.io.IOException;
@@ -18,10 +19,10 @@ public abstract class AbstractSettingsMenu implements SmartMessageProvider {
         return member.hasPermission(SettingsCommand.SETTINGS_PERMISSION);
     }
 
-    protected void replySuccessMessage(IReplyCallback callback) {
+    protected void replySuccessMessage(IReplyCallback callback, Lang lang) {
         callback.replyEmbeds(new StarbankEmbed()
-                .setTitle("Star Bank - Settings")
-                .setDescription("Your changes have been saved !")
+                .setTitle("Star Bank - " + lang.localize("settings.name"))
+                .setDescription(lang.localize("settings.changes.success"))
                 .setColor(StarbankEmbed.SUCCESS_COLOR)
                 .build()).setEphemeral(true).queue();
     }

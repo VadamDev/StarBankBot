@@ -23,10 +23,6 @@ public class MessageContent {
        Setters
      */
 
-    public void setEmbed(Collection<MessageEmbed> embeds) {
-        this.embeds = embeds;
-    }
-
     public void setEmbed(MessageEmbed... embeds) {
         this.embeds = Arrays.asList(embeds);
     }

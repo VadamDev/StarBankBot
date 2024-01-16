@@ -12,11 +12,10 @@ public class Main {
     public static final StarbankBot starbankBot;
 
     static {
-        AppConfig config = null;
+        final AppConfig config = new AppConfig();
 
         try {
-            config = new AppConfig();
-            boolean existedBefore = config.getYamlFile().exists();
+            final boolean existedBefore = config.getYamlFile().exists();
             ConfigurationLoader.loadConfiguration(config);
 
             if(!existedBefore) {

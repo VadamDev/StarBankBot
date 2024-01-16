@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.vadamdev.starbankbot.Main;
 
 import java.util.Locale;
+import java.util.function.UnaryOperator;
 
 /**
  * @author VadamDev
@@ -27,6 +28,10 @@ public enum Lang {
 
     public String localize(String unlocalizedName) {
         return Main.starbankBot.getLanguageManager().localize(this, unlocalizedName);
+    }
+
+    public String localize(String unlocalizedName, UnaryOperator<String> operator) {
+        return operator.apply(localize(unlocalizedName));
     }
 
     public String getDisplayName() {

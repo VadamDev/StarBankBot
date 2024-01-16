@@ -1,7 +1,14 @@
 {
-  "distributionMode.description.DEFAULT": "Le montant initial (%amount%) sera partagé entre tous les membres",
-  "distributionMode.description.PERCENTAGE": "Le bot prendra certain pourcentage (%percentage%%) et donnera le reste aux membres",
-  "distributionMode.description.COUNT_AS_USER": "Le bot se considerera comme quelqu'un souhaitant récupéré sa part",
+  "distributionMode.description.DEFAULT.a": "Formule: amount / users",
+  "distributionMode.description.DEFAULT.b": "Le montant initial (%amount%) sera partagé entre tous les membres",
+
+  "distributionMode.description.PERCENTAGE.a": "Formule: (amount - percentage * amount) / users",
+  "distributionMode.description.PERCENTAGE.b": "Le bot prendra certain pourcentage (%percentage%%) et donnera le reste aux membres",
+
+  "distributionMode.description.COUNT_AS_USER.a": "Formule: amount / (users + 1)",
+  "distributionMode.description.COUNT_AS_USER.b": "Le bot se considerera comme quelqu'un souhaitant récupéré sa part",
+
+
 
   "transaction.header": "**Membres:**",
   "transaction.footer": [
@@ -20,12 +27,39 @@
     "> ``%bot% aUEC``"
   ],
 
-  "transaction.add.message": [
+  "transaction.button.add.message": [
     "**Boutons:**",
-    "> #️⃣ *: Ajouter depuis un salon*",
-    "> \uD83D\uDC64 *: Ajouter des membres spécifique*"
+    "> 1\uFE0F⃣ *: Ajouter depuis un salon*",
+    "> 2\uFE0F⃣ *: Ajouter des membres spécifique*"
   ],
 
   "transaction.error.not_owner": "Seul la personne ayant taper la commande peut finir la transaction !",
-  "transaction.error.not_user": "Vous ne faite pas partit de cette transaction !"
+  "transaction.error.not_user": "Vous ne faite pas partit de cette transaction !",
+
+
+
+  "settings.name": "Paramètres",
+  "settings.back": "Retour",
+  "settings.close": "Fermer",
+
+  "settings.changes.success": "Vos changements on été sauvegarder !",
+
+  "settings.mainMenu.description": [
+    "> Langue: %lang_name% (%lang_flag%)",
+    "",
+    "> Mode de Distribution: %distribution_mode%",
+    "%percentage_line%",
+    "> Allow Override Distribution Mode: %allow_override%"
+  ],
+  "settings.mainMenu.percentageLine": "> Pourcentage: %percentage%%\n",
+
+  "settings.languageMenu.description": "Sélectionnez une langue dans la liste ci-dessous",
+
+  "settings.transactionMenu.description": [
+    "> Mode de Distribution: %distribution_mode%",
+    "%percentage_line%",
+    "> Allow Override Distribution Mode: %allow_override%"
+  ],
+  "settings.transactionMenu.percentageLine": "> Pourcentage: %percentage%%\n",
+  "settings.transactionMenu.percentageError": "Vous devez spécifier un nombre compris entre 1 et 99 !"
 }

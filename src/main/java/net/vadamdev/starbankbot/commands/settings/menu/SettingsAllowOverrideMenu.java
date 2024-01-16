@@ -8,6 +8,7 @@ import net.vadamdev.jdautils.smart.entities.SmartButton;
 import net.vadamdev.jdautils.smart.messages.MessageContent;
 import net.vadamdev.starbankbot.Main;
 import net.vadamdev.starbankbot.config.GuildConfiguration;
+import net.vadamdev.starbankbot.language.Lang;
 import net.vadamdev.starbankbot.utils.StarbankEmbed;
 
 import java.util.function.Consumer;
@@ -20,13 +21,14 @@ public class SettingsAllowOverrideMenu extends AbstractSettingsMenu {
     @Override
     public void init(Guild guild, MessageContent contents) {
         final GuildConfiguration config = Main.starbankBot.getGuildConfigManager().getOrDefault(guild);
+        final Lang lang = config.getLang();
 
         /*
            Embeds
          */
 
         contents.setEmbed(new StarbankEmbed()
-                .setTitle("Star Bank - Settings")
+                .setTitle("Star Bank - " + lang.localize("settings.name"))
                 .setColor(StarbankEmbed.CONFIG_COLOR)
                 .build()
         );
@@ -43,7 +45,7 @@ public class SettingsAllowOverrideMenu extends AbstractSettingsMenu {
         final Consumer<ButtonInteractionEvent> consumer = event -> {
             setConfigValue(config, "TRANSACTION_ALLOW_OVERRIDE", !canOverride);
 
-            replySuccessMessage(event);
+            replySuccessMessage(event, lang);
             SettingsMainMenu.SETTINGS_TRANSACTION_MENU.open(event.getMessage());
         };
 

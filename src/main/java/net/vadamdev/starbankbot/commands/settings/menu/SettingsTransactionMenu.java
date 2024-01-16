@@ -13,6 +13,7 @@ import net.vadamdev.jdautils.smart.messages.MessageContent;
 import net.vadamdev.starbankbot.Main;
 import net.vadamdev.starbankbot.commands.settings.SettingsCommand;
 import net.vadamdev.starbankbot.config.GuildConfiguration;
+import net.vadamdev.starbankbot.language.Lang;
 import net.vadamdev.starbankbot.transaction.DistributionMode;
 import net.vadamdev.starbankbot.utils.StarbankEmbed;
 import net.vadamdev.starbankbot.utils.Utils;
@@ -29,30 +30,32 @@ public class SettingsTransactionMenu extends AbstractSettingsMenu {
                             .setRequiredRange(1, 3)
                             .build()
             ).build(), event -> {
-                if(!event.getMember().hasPermission(SettingsCommand.SETTINGS_PERMISSION))
+                if(!canUse(event.getMember()))
                     return;
+
+                final GuildConfiguration config = Main.starbankBot.getGuildConfigManager().getOrDefault(event.getGuild());
+                final Lang lang = config.getLang();
 
                 try {
                     final int percentage = Integer.parseInt(event.getValue("percentage").getAsString());
-
                     if (percentage < 1 || percentage > 99) {
                         event.replyEmbeds(new StarbankEmbed()
-                                .setTitle("Star Bank - Settings")
-                                .setDescription("You need to specify a number between 1 and 99 !")
+                                .setTitle("Star Bank - " + lang.localize("settings.name"))
+                                .setDescription(lang.localize("settings.transactionMenu.percentageError"))
                                 .setColor(StarbankEmbed.ERROR_COLOR)
                                 .build()).setEphemeral(true).queue();
 
                         return;
                     }
 
-                    setConfigValue(Main.starbankBot.getGuildConfigManager().getOrDefault(event.getGuild()), "TRANSACTION_PERCENTAGE", percentage);
+                    setConfigValue(config, "TRANSACTION_PERCENTAGE", percentage);
 
-                    replySuccessMessage(event);
+                    replySuccessMessage(event, lang);
                     SettingsMainMenu.SETTINGS_TRANSACTION_MENU.open(event.getMessage());
                 } catch (Exception ignored) {
                     event.replyEmbeds(new StarbankEmbed()
-                            .setTitle("Star Bank - Settings")
-                            .setDescription("You need to specify a number between 1 and 100 !")
+                            .setTitle("Star Bank - " + lang.localize("settings.name"))
+                            .setDescription(lang.localize("settings.transactionMenu.percentageError"))
                             .setColor(StarbankEmbed.ERROR_COLOR)
                             .build()).setEphemeral(true).queue();
                 }
@@ -61,6 +64,7 @@ public class SettingsTransactionMenu extends AbstractSettingsMenu {
     @Override
     public void init(Guild guild, MessageContent contents) {
         final GuildConfiguration config = Main.starbankBot.getGuildConfigManager().getOrDefault(guild);
+        final Lang lang = config.getLang();
         final DistributionMode distributionMode = config.getDistributionMode();
 
         /*
@@ -68,11 +72,12 @@ public class SettingsTransactionMenu extends AbstractSettingsMenu {
          */
 
         contents.setEmbed(new StarbankEmbed()
-                .setTitle("Star Bank - Settings")
+                .setTitle("Star Bank - " + lang.localize("settings.name"))
                 .setDescription(
-                        "> Transaction Mode: " + distributionMode.name() + "\n" +
-                        (distributionMode == DistributionMode.PERCENTAGE ? "> Percentage: " + config.TRANSACTION_PERCENTAGE + "%\n" : "") +
-                        "> Allow Override Transaction Mode: " + Utils.displayBoolean(config.TRANSACTION_ALLOW_OVERRIDE)
+                        lang.localize("settings.transactionMenu.description", str -> str
+                                .replace("%distribution_mode%", distributionMode.getDisplayName())
+                                .replace("%percentage_line%", distributionMode.equals(DistributionMode.PERCENTAGE) ? lang.localize("settings.transactionMenu.percentageLine", str1 -> str1.replace("%percentage%", String.valueOf(config.TRANSACTION_PERCENTAGE))) : "")
+                                .replace("%allow_override%", Utils.displayBoolean(config.TRANSACTION_ALLOW_OVERRIDE)))
                 )
                 .setColor(StarbankEmbed.CONFIG_COLOR)
                 .build()
@@ -82,40 +87,35 @@ public class SettingsTransactionMenu extends AbstractSettingsMenu {
            Components
          */
 
-        final StringSelectMenu.Builder transactionSelectMenu = DistributionMode.createSelectionMenu();
-        transactionSelectMenu.setDefaultOptions(distributionMode.toSelectOption());
-
         contents.addComponents(
-                SmartStringSelectMenu.of(transactionSelectMenu.build(), event -> {
+                SmartStringSelectMenu.of(DistributionMode.createSelectionMenu(lang).setDefaultOptions(distributionMode.toSelectOption(lang)).build(), event -> {
                     if(!canUse(event.getMember()))
                         return;
 
                     setConfigValue(config, "TRANSACTION_MODE", event.getValues().get(0));
 
-                    replySuccessMessage(event);
-
+                    replySuccessMessage(event, lang);
                     SettingsMainMenu.SETTINGS_TRANSACTION_MENU.open(event.getMessage());
                 })
         );
 
         contents.addComponents(
-                SmartButton.of(config.getDistributionMode().equals(DistributionMode.PERCENTAGE) ? Button.primary("StarBank-Settings-TransactionPercentage", "Percentage") : Button.primary("StarBank-Settings-TransactionPercentage", "Percentage").asDisabled(), event -> {
+                SmartButton.of(distributionMode.equals(DistributionMode.PERCENTAGE) ? Button.primary("StarBank-Settings-TransactionPercentage", "Percentage") : Button.primary("StarBank-Settings-TransactionPercentage", "Percentage").asDisabled(), event -> {
                     if(!canUse(event.getMember()))
                         return;
 
                     PERCENTAGE_MODAL.open(event);
                 }),
 
-                SmartButton.of(Button.primary("StarBank-Settings-AllowOverride", "Allow Override Transaction Mode"), event -> {
+                SmartButton.of(Button.primary("StarBank-Settings-AllowOverride", "Allow Override Distribution Mode"), event -> {
                     if(!canUse(event.getMember()))
                         return;
 
                     event.deferEdit().queue();
-
                     SettingsMainMenu.SETTINGS_OVERRIDE_MENU.open(event.getMessage());
                 }),
 
-                SmartButton.of(Button.secondary("StarBank-Settings-MainMenu", "Go Back"), event -> {
+                SmartButton.of(Button.secondary("StarBank-Settings-MainMenu", lang.localize("settings.back")), event -> {
                     if(!canUse(event.getMember()))
                         return;
 

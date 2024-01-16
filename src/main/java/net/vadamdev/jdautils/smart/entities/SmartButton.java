@@ -1,6 +1,7 @@
 package net.vadamdev.jdautils.smart.entities;
 
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
@@ -11,7 +12,7 @@ import java.util.function.Consumer;
  * @author VadamDev
  * @since 08/01/2024
  */
-public class SmartButton implements ISmartComponent<ButtonInteractionEvent> {
+public class SmartButton implements ISmartComponent {
     public static SmartButton of(Button button, Consumer<ButtonInteractionEvent> consumer) {
         return new SmartButton(button, consumer);
     }
@@ -32,8 +33,8 @@ public class SmartButton implements ISmartComponent<ButtonInteractionEvent> {
     }
 
     @Override
-    public void run(ButtonInteractionEvent event) {
-        consumer.accept(event);
+    public void run(GenericComponentInteractionCreateEvent event) {
+        consumer.accept((ButtonInteractionEvent) event);
     }
 
     @Override
