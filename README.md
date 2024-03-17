@@ -1,4 +1,4 @@
-# StarBankBot
+# Starbank Bot
 
 ## Summary
 
